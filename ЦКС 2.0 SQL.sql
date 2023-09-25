@@ -53,7 +53,7 @@ where marriage.CHANGE_DATE_NUM = 1;
 select
 	fl.IIN,
 	fl.BIRTH_DATE,
-	fl.IS_LIVE, /* 1 - жив, 0 - мерт */
+	fl.IS_LIVE, /* 1 - жив, 0 - мертв */
 	fl.DEATH_DATE,
 	fl.AR_CODE
 from
