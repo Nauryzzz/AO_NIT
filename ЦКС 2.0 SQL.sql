@@ -1,4 +1,4 @@
-/* 1. */
+/* 1. Свидетельство о рождении */
 -- Могут быть значение NULL в ИИН у родителей
 -- Один и тот же NUMBER_AKT, но разные ИИН у детей
 -- Есть ИИН детей равных ИИН родителей (817 записей)
@@ -23,9 +23,9 @@ from
 		z.CHILD_IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and /* Не NULL */
 		z.CHILD_IIN is not null and
 		z.NUMBER_AKT is not null) as birth
-where birth.CHANGE_DATE_NUM = 1
+where birth.CHANGE_DATE_NUM = 1;
 
-/* 2. */
+/* 2. Свидетельство о браке */
 -- кол ИИН мужчин с несколькими номерами акта 321 493
 -- кол ИИН женщин с несколькими номерами акта 198 478
 -- кол записей с NULL ИИН для мужчины и женщины 4 308 057
@@ -49,7 +49,7 @@ from
 		m.NUMBER_AKT is not null) as marriage
 where marriage.CHANGE_DATE_NUM = 1;
 
-/* 3. */
+/* 3. ГБД ФЛ */
 select
 	fl.IIN,
 	fl.BIRTH_DATE,
@@ -68,4 +68,4 @@ from
 	where 
 		p.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
 		p.IIN is not null) as fl
-where fl.CHANGE_TIME_NUM = 1
+where fl.CHANGE_TIME_NUM = 1;
