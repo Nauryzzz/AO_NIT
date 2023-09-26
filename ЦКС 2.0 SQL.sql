@@ -29,7 +29,7 @@ from
 		z.ANNULATED = 0 and
 		z.DELETED = 0 and
 		z.DELETED_AS_DUPLICATE = 0) as birth
-where birth.CHANGE_DATE_NUM = 1 and (birth.MOTHER_IIN is not null and birth.FATHER_IIN is not null);
+where birth.CHANGE_DATE_NUM = 1 and (birth.MOTHER_IIN is not null or birth.FATHER_IIN is not null);
 
 /* 2. Свидетельство о браке */
 -- количество ИИН мужчин с несколькими номерами акта 321 493
@@ -64,13 +64,12 @@ where marriage.CHANGE_DATE_NUM = 1 and (marriage.MAN_IIN is not null and marriag
 /* 3. ГБД ФЛ */
 -- DEATH_DATE может быть NULL при статусе "мертв"
 select
-	fl.ID,
 	fl.IIN,
 	fl.BIRTH_DATE,
 	fl.IS_LIVE,
 	fl.DEATH_DATE,
 	fl.AR_CODE,
-	fl.CHANGE_TIME
+	fl.CHANGE_DATE
 from
 	(select
 		p.ID,
@@ -79,7 +78,7 @@ from
 		if(p.PERSON_STATUS_ID = 3, 0, 1) as IS_LIVE, /* PERSON_STATUS_ID = 3 Умерший */
 		if(p.DEATH_DATE = '0000-00-00 00:00:00', null, p.DEATH_DATE) as DEATH_DATE,
 		if(p.AR_CODE = '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8', null, p.AR_CODE) as AR_CODE,
-		p.CHANGE_TIME,
+		p.CHANGE_TIME as CHANGE_DATE,
 		row_number() over (partition by p.IIN order by p.CHANGE_TIME desc) as CHANGE_TIME_NUM
 	from MU_FL.GBL_PERSON as p
 	where 
