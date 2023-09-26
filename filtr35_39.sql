@@ -245,9 +245,8 @@ from
 		on vt1.IIN = n_114.IIN
 		except
 			select 
-				distinct p.IIN as IIN
-			from MTSZN_CBDIAPP.PATIENT as p
-				inner join MTSZN_CBDIAPP.PATIENT_INFO as pi on pi.PATIENT_ID = p.ID 
+				distinct pi.RN as IIN
+			from MTSZN_CBDIAPP.PATIENT_INFO as pi
 			where pi.INV_GROUP in (1, 2) and toDate(pi.INV_ENDDATE) >= today()) as p23
 	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p23.IIN
 	group by toString(fm.SK_FAMILY_ID)) as filtr35_39
