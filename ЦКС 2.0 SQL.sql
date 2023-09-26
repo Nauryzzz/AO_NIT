@@ -25,7 +25,10 @@ from
 		z.BIRTH_STATUS_ID = 1 and /* Живорожденный */
 		z.CHILD_IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and /* Не NULL */
 		z.CHILD_IIN is not null and
-		z.NUMBER_AKT is not null) as birth
+		z.NUMBER_AKT is not null and
+		z.ANNULATED = 0 and
+		z.DELETED = 0 and
+		z.DELETED_AS_DUPLICATE = 0) as birth
 where birth.CHANGE_DATE_NUM = 1 and (birth.MOTHER_IIN is not null and birth.FATHER_IIN is not null);
 
 /* 2. Свидетельство о браке */
@@ -52,7 +55,10 @@ from
 	where 
 		m.STATUS_ID = 7 and /* Регистрация завершена */
 		m.DIVORCE_AKT_NUMBER is null and /* Брак не расторгнут */
-		m.NUMBER_AKT is not null) as marriage
+		m.NUMBER_AKT is not null and
+		m.ANNULATED = 0 and
+		m.DELETED = 0 and
+		m.DELETED_AS_DUPLICATE = 0) as marriage
 where marriage.CHANGE_DATE_NUM = 1 and (marriage.MAN_IIN is not null and marriage.WOMAN_IIN is not null);
 
 /* 3. ГБД ФЛ */
