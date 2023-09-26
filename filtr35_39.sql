@@ -244,7 +244,7 @@ from
 			where cat = 2 and category = '142080004600000000') as n_114
 		on vt1.IIN = n_114.IIN
 		except
-			select 
+			select
 				distinct pi.RN as IIN
 			from MTSZN_CBDIAPP.PATIENT_INFO as pi
 			where pi.INV_GROUP in (1, 2) and toDate(pi.INV_ENDDATE) >= today()) as p23
