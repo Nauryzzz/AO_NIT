@@ -1,4 +1,4 @@
--- запустить на 17 сервере
+-- запустить на 17 сервере. Загрузить данные с TEST.alimenty (17 сервер) в таблицу AIS_OIP.POKAZATELI (5 сервер)
 DROP TABLE IF EXISTS AIS_OIP.POKAZATELI;
 
 CREATE TABLE AIS_OIP.POKAZATELI
@@ -44,23 +44,23 @@ insert into
 							IS_ONKOUCHET, IS_DEESPOSOBNOST, IS_ZAKLUCHENIE,
 							IS_HIGHSCHOOL)
 select distinct
-	a.IIN, 
-	f.SEX_NAME,
-	f.PERSON_AGE,
-	if(f.COUNT_CREDIT > 0, 1, 0) as IS_CREDIT,
-	if(f.INCOME_LPH_IIN > 0, 1, 0) as IS_LPH,
-	if(f.CNT_GRST_IIN > 0, 1, 0) as IS_GRST,
-	if(f.DUCHET = 'D-UCHET', 1, 0) as IS_DUCHET,
-	if(empty(f.KATO_2) = 1, '0', f.KATO_2) as KATO_2, 
-	f.KATO_2_NAME as KATO_2_NAME,
-	if(e.iin_bin is not null, 1, 0) as IS_OBRASHENIE,
-	if(z.IIN_H2 is null, 1, 0) as IS_ALIVE,
-	set1.IS_PSIHUCHET,
-	set1.IS_NARKOUCHET,
-	set1.IS_ONKOUCHET,
-	set1.IS_DEESPOSOBNOST,
-	set1.IS_ZAKLUCHENIE,
-	if(f.EDU_HIGHSCHOOL > 0, 1, 0) as IS_HIGHSCHOOL
+	a.IIN, /* ИИН */
+	f.SEX_NAME, /* Пол */
+	f.PERSON_AGE, /* Возраст */
+	if(f.COUNT_CREDIT > 0, 1, 0) as IS_CREDIT, /* Наличие кредита */
+	if(f.INCOME_LPH_IIN > 0, 1, 0) as IS_LPH, /* Наличие ЛПХ */
+	if(f.CNT_GRST_IIN > 0, 1, 0) as IS_GRST, /* Наличие ГРСТ */
+	if(f.DUCHET = 'D-UCHET', 1, 0) as IS_DUCHET, /* Д-учет */
+	if(empty(f.KATO_2) = 1, '0', f.KATO_2) as KATO_2, /* Код региона */ 
+	f.KATO_2_NAME as KATO_2_NAME, /* Название региона */
+	if(e.iin_bin is not null, 1, 0) as IS_OBRASHENIE, /* Наличие обращения */
+	if(z.IIN_H2 is null, 1, 0) as IS_ALIVE, /* Жив/мертв */
+	set1.IS_PSIHUCHET, /* Псих. учет */
+	set1.IS_NARKOUCHET, /* Нарко. учет */
+	set1.IS_ONKOUCHET, /* Онко. учет */
+	set1.IS_DEESPOSOBNOST, /* Дееспособность */
+	set1.IS_ZAKLUCHENIE, /* Находится в заключении */
+	if(f.EDU_HIGHSCHOOL > 0, 1, 0) as IS_HIGHSCHOOL /* Наличие высшего образования */
 from AIS_OIP.AIS_OIP_ALIMENTSCHIKI as a
 	left join SOC_KARTA.SK_FAMILY_QUALITY_IIN3 as f on f.IIN = a.IIN
 	left join MCRIAP_EOBR.main_sec_2 as e on e.iin_bin = a.IIN
