@@ -14,7 +14,7 @@ from
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18) as n_109 /* люди от 18 лет */
-		inner join 
+		inner join /* объединение людей от 18 лет с людьми с прикреплением к поликлинике */
 			(select
 				distinct p.IIN as IIN
 			from MZ_RPN.PERSON p
