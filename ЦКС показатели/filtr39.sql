@@ -8,12 +8,14 @@ from
 		distinct vt1.IIN as IIN
 	from
 		(select 
-			distinct n_109.IIN as IIN
+			distinct n109.IIN as IIN
 		from
 			(select 
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
-			where date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18) as n_109 /* люди от 18 лет */
+			where 
+				date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+				gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n109 /* люди от 18 лет */
 		inner join /* объединение людей от 18 лет с людьми с прикреплением к поликлинике */
 			(select
 				distinct p.IIN as IIN
@@ -22,14 +24,14 @@ from
 			where att.ENDDATE is null and p.DEATHDATE is null and 
 				p.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
 				p.IIN is not null) as n_111 /* прикрепленные к поликлинике */
-		on n_109.IIN = n_111.IIN
+		on n109.IIN = n_111.IIN
 		inner join /* объединение прикрепленных к поликлинике людей от 18 лет с людьми с зависимостью от ПАВ */
 			(select 
 				distinct h.IIN as IIN
 			from MZ_ERDB.HUMAN as h
 				inner join MZ_ERDB.HUMAN_DIAG as hd on hd.HUMAN_UID = h.UID
 			where hd.ICD10 between 'F10' and 'F19.9') as n_112 /* люди с зависимостью от ПАВ */
-		on n_109.IIN = n_112.IIN
+		on n109.IIN = n_112.IIN
 			except /* исключение беременных женщин */
 		select 
 			distinct h.IIN as IIN /* беременные женщины */

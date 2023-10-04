@@ -13,7 +13,9 @@ from
 			(select 
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
-			where date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18) as n105 /* люди от 18 лет */
+			where 
+				date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+				gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n105 /* люди от 18 лет */
 		inner join /* объединение людей от 18 лет с людьми с зависимостью от ПАВ */
 			(select 
 				distinct h.IIN as IIN

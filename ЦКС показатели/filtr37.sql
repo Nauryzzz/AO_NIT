@@ -5,13 +5,14 @@ select
 	if(count(p12.IIN) > 0, 1, 0) as filtr_value /* если в семье есть хоть один подходящий ИИН, то признак будет 1 иначе 0 */
 from
 	(select 
-		distinct n_54.IIN as IIN
+		distinct n54.IIN as IIN
 	from
 		(select 
 			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n_54 /* дети от 5 (включительно) до 18 лет */  
+			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+			  gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n54 /* дети от 5 (включительно) до 18 лет */  
 	inner join /* объединение детей от 5 до 18 лет с обучающимися детьми */
 		(select 
 			distinct vt2.IIN as IIN
@@ -35,7 +36,7 @@ from
 					st.IIN is not null) as vt1
 			where vt1.num = 1 /* последняя запись по REG_DATE */) as vt2
 		where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n55
-	on n_54.IIN = n55.IIN
+	on n54.IIN = n55.IIN
 	inner join /* объединение обучающихся детей от 5 до 18 лет с детьми имеющими инвалидность */
 		(select 
 			distinct pi.RN as IIN
@@ -46,6 +47,6 @@ from
 								7, /* Ребенок- инвалид 2 группа */
 								8  /* Ребенок- инвалид 3 группа */) and 
 			toDate(pi.INV_ENDDATE) >= today()) as n56 /* дети имеющие инвалидность */
-	on n_54.IIN = n56.IIN) as p12
+	on n54.IIN = n56.IIN) as p12
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p12.IIN /* определение ID семьи для ИИН */
 group by toString(fm.SK_FAMILY_ID)

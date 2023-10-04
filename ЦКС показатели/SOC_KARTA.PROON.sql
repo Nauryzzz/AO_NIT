@@ -1,4 +1,4 @@
--- на 5-ом сервере запускать
+-- запускать на 5-ом сервере 
 
 DROP TABLE IF EXISTS SK_FAMILY.PROON;
 
@@ -37,13 +37,14 @@ from
 		if(count(p10.IIN) > 0, 1, 0) as filtr_value
 	from
 		(select 
-			distinct n_48.IIN as IIN
+			distinct n48.IIN as IIN
 		from
 			(select 
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n_48
+				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+				  gp.PERSON_STATUS_ID <> 3) as n48
 		inner join
 			(select 
 				distinct vt2.IIN as IIN
@@ -69,7 +70,7 @@ from
 						st.IIN is not null) as vt1
 				where vt1.num = 1) as vt2
 			where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n49_50
-		on n_48.IIN = n49_50.IIN) as p10
+		on n48.IIN = n49_50.IIN) as p10
 	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p10.IIN
 	group by toString(fm.SK_FAMILY_ID)
 	
@@ -81,13 +82,14 @@ from
 		if(count(p11.IIN) > 0, 1, 0) as filtr_value
 	from
 		(select 
-			distinct n_51.IIN as IIN
+			distinct n51.IIN as IIN
 		from
 			(select 
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n_51	  
+				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+				  gp.PERSON_STATUS_ID <> 3) as n51	  
 		inner join
 			(select 
 				distinct vt2.IIN as IIN
@@ -116,7 +118,7 @@ from
 					) as vt1
 				where vt1.num = 1) as vt2
 			where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n52_53
-		on n_51.IIN = n52_53.IIN) as p11
+		on n51.IIN = n52_53.IIN) as p11
 	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p11.IIN
 	group by toString(fm.SK_FAMILY_ID)
 	
@@ -128,13 +130,14 @@ from
 		if(count(p12.IIN) > 0, 1, 0) as filtr_value
 	from
 		(select 
-			distinct n_54.IIN as IIN
+			distinct n54.IIN as IIN
 		from
 			(select 
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n_54	  
+				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+				  gp.PERSON_STATUS_ID <> 3) as n54	  
 		inner join
 			(select 
 				distinct vt2.IIN as IIN
@@ -158,13 +161,13 @@ from
 						st.IIN is not null) as vt1
 				where vt1.num = 1) as vt2
 			where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n55
-		on n_54.IIN = n55.IIN
+		on n54.IIN = n55.IIN
 		inner join
 			(select 
 				distinct pi.RN as IIN
 			from MTSZN_CBDIAPP.PATIENT_INFO as pi
 			where pi.INV_GROUP in (4, 9, 6, 7, 8) and toDate(pi.INV_ENDDATE) >= today()) as n56
-		on n_54.IIN = n56.IIN) as p12
+		on n54.IIN = n56.IIN) as p12
 	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p12.IIN
 	group by toString(fm.SK_FAMILY_ID)
 	
@@ -184,7 +187,9 @@ from
 				(select 
 					distinct gp.IIN as IIN
 				from MU_FL.GBL_PERSON as gp
-				where date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18) as n105
+				where 
+					date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+					gp.PERSON_STATUS_ID <> 3) as n105
 			inner join
 				(select 
 					distinct h.IIN as IIN
@@ -211,12 +216,14 @@ from
 			distinct vt1.IIN as IIN
 		from
 			(select 
-				distinct n_109.IIN as IIN
+				distinct n109.IIN as IIN
 			from
 				(select 
 					distinct gp.IIN as IIN
 				from MU_FL.GBL_PERSON as gp
-				where date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18) as n_109
+				where 
+					date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+					gp.PERSON_STATUS_ID <> 3) as n109
 			inner join
 				(select
 					distinct p.IIN as IIN
@@ -225,14 +232,14 @@ from
 				where att.ENDDATE is null and p.DEATHDATE is null and 
 					p.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
 					p.IIN is not null) as n_111
-			on n_109.IIN = n_111.IIN
+			on n109.IIN = n_111.IIN
 			inner join
 				(select 
 					distinct h.IIN as IIN
 				from MZ_ERDB.HUMAN as h
 					inner join MZ_ERDB.HUMAN_DIAG as hd on hd.HUMAN_UID = h.UID
 				where hd.ICD10 between 'F10' and 'F19.9') as n_112
-			on n_109.IIN = n_112.IIN
+			on n109.IIN = n_112.IIN
 				except
 			select 
 				distinct h.IIN as IIN
@@ -271,7 +278,8 @@ from
 					distinct gp.IIN as IIN
 				from MU_FL.GBL_PERSON as gp
 				where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 7 and 
-					  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n101
+					  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+					  gp.PERSON_STATUS_ID <> 3) as n101
 			inner join
 				(select 
 					distinct h.IIN as IIN

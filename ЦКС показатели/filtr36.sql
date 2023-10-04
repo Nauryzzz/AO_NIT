@@ -5,13 +5,14 @@ select
 	if(count(p11.IIN) > 0, 1, 0) as filtr_value /* если в семье есть хоть один подходящий ИИН, то признак будет 1 иначе 0 */
 from
 	(select 
-		distinct n_51.IIN as IIN
+		distinct n51.IIN as IIN
 	from
 		(select 
 			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18) as n_51 /* дети от 5 (включительно) до 18 лет */
+			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+			  gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n51 /* дети от 5 (включительно) до 18 лет */
 	inner join /* объединение детей от 5 до 18 лет с обучающимися детьми у которых есть подвоз до школы */
 		(select 
 			distinct vt2.IIN as IIN
@@ -42,6 +43,6 @@ from
 				) as vt1
 			where vt1.num = 1 /* последняя запись по REG_DATE */) as vt2
 		where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n52_53 /* дети обучающиеся в школе с подвозом */
-	on n_51.IIN = n52_53.IIN) as p11
+	on n51.IIN = n52_53.IIN) as p11
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p11.IIN /* определение ID семьи для ИИН */
 group by toString(fm.SK_FAMILY_ID)
