@@ -30,7 +30,8 @@ CREATE TABLE AIS_OIP.AIS_OIP_CASE_3
     `IS_ONKOUCHET` Nullable(Int16),
     `IS_DEESPOSOBNOST` Nullable(Int16),
     `IS_ZAKLUCHENIE` Nullable(Int16),
-    `IS_HIGHSCHOOL` Nullable(Int16)
+    `IS_HIGHSCHOOL` Nullable(Int16),
+	`IS_NEDV` Nullable(Int16)
 )
 ENGINE = MergeTree
 ORDER BY IIN
@@ -42,7 +43,7 @@ insert into
 							IS_DUCHET, KATO_2, KATO_2_NAME, IS_OBRASHENIE,
 							IS_ALIVE, IS_PSIHUCHET, IS_NARKOUCHET,
 							IS_ONKOUCHET, IS_DEESPOSOBNOST, IS_ZAKLUCHENIE,
-							IS_HIGHSCHOOL)
+							IS_HIGHSCHOOL, IS_NEDV)
 select distinct
 	a.IIN, /* ИИН */
 	f.SEX_NAME, /* Пол */
@@ -60,7 +61,8 @@ select distinct
 	set1.IS_ONKOUCHET, /* Онко. учет */
 	set1.IS_DEESPOSOBNOST, /* Дееспособность */
 	set1.IS_ZAKLUCHENIE, /* Находится в заключении */
-	if(f.EDU_HIGHSCHOOL > 0, 1, 0) as IS_HIGHSCHOOL /* Наличие высшего образования */
+	if(f.EDU_HIGHSCHOOL > 0, 1, 0) as IS_HIGHSCHOOL, /* Наличие высшего образования */
+	if(f.CNT_NEDV_IIN > 0, 1, 0) as IS_NEDV /* Наличие недвижимости */
 from AIS_OIP.AIS_OIP_ALIMENTSCHIKI as a
 	left join SOC_KARTA.SK_FAMILY_QUALITY_IIN3 as f on f.IIN = a.IIN
 	left join MCRIAP_EOBR.main_sec_2 as e on e.iin_bin = a.IIN
