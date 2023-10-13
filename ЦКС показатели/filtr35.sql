@@ -33,7 +33,7 @@ from
 					inner join MON_NOBD.D_TYPE_SCHOOL as ts on ts.ID = sattr.SCHOOL_TYPE_ID
 				where s.DATE_CLOSE1 is null and -- школа еще не закрыта
 					ts.ID = 2 and -- Организации среднего образования(начального, основного среднего и общего среднего)
-					fp.HOTMEAL_PROVIDE_ID is not null and /* признак бесплатного питания */
+					fp.HOTMEAL_PROVIDE_ID is not null and -- признак бесплатного питания
 					st.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
 					st.IIN is not null) as vt1
 			where vt1.num = 1 /* последняя запись по REG_DATE */) as vt2
