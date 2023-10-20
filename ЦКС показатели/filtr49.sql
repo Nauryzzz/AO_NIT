@@ -10,6 +10,6 @@ from
 	where 
 		mz.IIN is not null and
 		mz.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
-		mz.cnt_grst_iin > 0) as p2
+		mz.cnt_grst_iin > 0 /* кол. с/х техники */) as p2
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p2.IIN -- определение ID семьи для ИИН
 group by toString(fm.SK_FAMILY_ID)
