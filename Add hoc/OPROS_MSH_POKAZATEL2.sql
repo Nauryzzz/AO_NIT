@@ -975,7 +975,7 @@ from
 		52,
 		'8.1',
 		'Растениеводство' as KATEGORIYA,
-		'пашня' as POKAZATEL,
+		'пашня (резерв)' as POKAZATEL,
 		kx_pansya_reserve as VALUE,
 		'гектар' as EDIZM
 	from 
@@ -993,7 +993,7 @@ from
 		53,
 		'8.2',
 		'Растениеводство' as KATEGORIYA,
-		'многолетние насаждения' as POKAZATEL,
+		'многолетние насаждения (резерв)' as POKAZATEL,
 		kx_mnogoletnie_reserve as VALUE,
 		'гектар' as EDIZM
 	from 
@@ -1011,7 +1011,7 @@ from
 		54,
 		'8.3',
 		'Растениеводство' as KATEGORIYA,
-		'залежь' as POKAZATEL,
+		'залежь (резерв)' as POKAZATEL,
 		kx_zelej_reserve as VALUE,
 		'гектар' as EDIZM
 	from 
@@ -1029,7 +1029,7 @@ from
 		55,
 		'8.4',
 		'Растениеводство' as KATEGORIYA,
-		'пастбища' as POKAZATEL,
+		'пастбища (резерв)' as POKAZATEL,
 		kx_pastbishe_reserve as VALUE,
 		'гектар' as EDIZM
 	from 
@@ -1047,7 +1047,7 @@ from
 		56,
 		'8.5',
 		'Растениеводство' as KATEGORIYA,
-		'сенокосы' as POKAZATEL,
+		'сенокосы (резерв)' as POKAZATEL,
 		kx_senokosy_reserve as VALUE,
 		'гектар' as EDIZM
 	from 
