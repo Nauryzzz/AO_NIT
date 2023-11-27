@@ -38,7 +38,8 @@ CREATE TABLE DM_ANALYTICS.YOUTH_NEET
     KATO Nullable(String),
     
     IS_NEET UInt8,
-    NEET_CATEGORY Nullable(String)
+    NEET_CATEGORY Nullable(String),
+    SDU_LOAD_IN_DT DateTime
 )
 ENGINE = MergeTree
 ORDER BY IIN
@@ -76,7 +77,8 @@ insert into DM_ANALYTICS.YOUTH_NEET
 	KATO_6, KATO_6_NAME,
 	KATO,
 	IS_NEET,
-	NEET_CATEGORY)
+	NEET_CATEGORY,
+	SDU_LOAD_IN_DT)
 select
 	IIN,
   	SEX_NAME,
@@ -142,7 +144,9 @@ select
 		then 'Молодой родитель'
 		else 
 			if(IS_NEET = 1, 'Не работающий', '(нет данных)')
-	end as NEET_CATEGORY
+	end as NEET_CATEGORY,
+	
+	today() as SDU_LOAD_IN_DT
 from 
 	DM_ANALYTICS.PEOPLE_NEET as neet
 	left join
@@ -154,4 +158,25 @@ from
 		from SOC_KARTA.KATO_FOR_FAMILY
 		where KATO_2 <> '' and KATO_2_NAME <> '') as k on k.IIN = neet.IIN
 where 
-	neet.PERSON_AGE between 14 and 34
+	neet.PERSON_AGE between 14 and 34;
+
+/*
+CREATE TABLE DM_ANALYTICS.YOUTH_NEET_HIST
+(
+	NEET_CNT Nullable(Int64),
+	YOUTH_CNT Nullable(Int64),
+    SDU_LOAD_IN_DT DateTime
+)
+ENGINE = MergeTree
+order by SDU_LOAD_IN_DT
+SETTINGS index_granularity = 8192;
+*/
+
+insert into 
+	DM_ANALYTICS.YOUTH_NEET_HIST (NEET_CNT, YOUTH_CNT, SDU_LOAD_IN_DT)
+select 
+	sumIf(yn.IS_NEET = 1, 1) as NEET_CNT,
+	COUNT(yn.IIN) as YOUTH_CNT,
+	MAX(SDU_LOAD_IN_DT) as SDU_LOAD_IN_DT
+from DM_ANALYTICS.YOUTH_NEET as yn
+
