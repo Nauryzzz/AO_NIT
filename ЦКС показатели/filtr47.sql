@@ -15,10 +15,10 @@ from
 	inner join -- объединение людей от 18 лет с людьми с просрочкой по кредиту
 		(select -- список людей с просрочкой по кредиту
 			distinct g.HASH_IIN as IIN 
-		from SK_FAMILY.GKB as g
+		from GKB.GKB as g
 		where 
-			g.PAYMENT_DAYS_OVERDUE > 90 /* просрочка больше 90 дней */ and 
-			g.DEBT_PASTDUE_VALUE > 1000 /* сумма просрочки большее 1000 тг. */) as n58 
+			g.PAYMENT_DAYS_OVERDUE <= 20 /* просрочка больше 90 дней */ and 
+			g.DEBT_PASTDUE_VALUE <= 100 /* сумма просрочки большее 1000 тг. */) as n58 
 	on n57.IIN = n58.IIN) as p13
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p13.IIN -- определение ID семьи для ИИН
 group by toString(fm.SK_FAMILY_ID)
