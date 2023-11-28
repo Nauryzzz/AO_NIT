@@ -113,7 +113,7 @@ from
 			from MU_FL.GBL_PERSON as gp
 			where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
 				  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
-				  gp.PERSON_STATUS_ID <> 3) as n51	  
+				  gp.PERSON_STATUS_ID <> 3) as n51
 		inner join
 			(select 
 				distinct vt2.IIN as IIN
@@ -457,8 +457,8 @@ from
 			(select
 				distinct g.HASH_IIN as IIN 
 			from SK_FAMILY.GKB as g
-			where g.PAYMENT_DAYS_OVERDUE > 90 and 
-				  g.DEBT_PASTDUE_VALUE > 1000) as n58 
+			where g.PAYMENT_DAYS_OVERDUE <= 20 and 
+				  g.DEBT_PASTDUE_VALUE <= 100) as n58 
 		on n57.IIN = n58.IIN) as p13
 	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p13.IIN
 	group by toString(fm.SK_FAMILY_ID)
