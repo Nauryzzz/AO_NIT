@@ -10,4 +10,4 @@ from
 		inner join MTSZN_ESUTD.CONTRACT as c on c.EMPLOYEE_ID = e.ID 
 	where c.TERMINATION_DATE is null) as p28
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p28.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

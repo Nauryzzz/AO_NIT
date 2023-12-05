@@ -27,7 +27,8 @@ from
 		from MTSZN_SOLIDARY.C_SDU_PNPD_DOCUMENT as doc
 			inner join MTSZN_SOLIDARY.SR_SOURCE as sr on sr.CODE = doc.RFPM_ID
 		where
-			toYear(toDateTimeOrNull(doc.PNCP_DATE)) = 2023 and 
+			toYear(toDateTimeOrNull(doc.PNCP_DATE)) = toYear(now()) and 
+			toMonth(toDateTimeOrNull(doc.PNCP_DATE)) between (toMonth(now() - interval 3 month)) and (toMonth(now() - interval 1 month)) and  
 			sr.CODE in ('01051101', /* 10 и более дет.многодет. матер */
 						'01051102', /* 9 детей многодетные матери */
 						'01051103', /* 8 детей многодетные матери */
@@ -38,4 +39,4 @@ from
 						'01051108'  /* 4-х и более детей при неполном стаже многодетные матери */)) as doc
 	on pers.SICID = doc.SICID) as p37
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p37.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

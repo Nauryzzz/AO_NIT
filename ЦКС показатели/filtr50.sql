@@ -13,4 +13,4 @@ from
 		lph.KOLVO > 0 /* количество животных */ and
 		lph.SUMMA > 0 /* стоимость  животных */) as p3
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p3.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

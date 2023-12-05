@@ -1,4 +1,4 @@
-/* Молодежь NEET (социальный статус не присвоен) */
+/* 42. Молодежь NEET (социальный статус не присвоен) */
 select
 	toString(fm.SK_FAMILY_ID) as SK_FAMILY_ID, -- ID семьи
 	'filtr54' as filtr, -- необходимо для определения значений текущего показателя при UNION ALL
@@ -19,4 +19,4 @@ from
 		neet.IS_OPV_2MONTH = 'Отсутствуют налоговые отчисления ОПВ последние 2 месяца подряд' and 
 		neet.IS_BEZRAB = 'Отсутствует в базе данных официальных безработных') as p42
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p42.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

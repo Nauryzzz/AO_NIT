@@ -1,4 +1,4 @@
-/* Информация по выпускникам послевузовского образования */
+/* 35. Информация по выпускникам послевузовского образования */
 select
 	toString(fm.SK_FAMILY_ID) as SK_FAMILY_ID,
 	'filtr56' as filtr, -- информация по выпускникам послевузовского образования
@@ -12,8 +12,10 @@ from
 			gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 16 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) < 29 and
-			  gp.PERSON_STATUS_ID <> 3) as n_148
+			date_diff(year, toDate(gp.BIRTH_DATE), today()) < 29 and
+			gp.REMOVED = 0 and 
+			(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
+			gp.PERSON_STATUS_ID <> 3) as n_148
 			  
 		inner join
 		

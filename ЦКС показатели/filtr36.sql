@@ -11,8 +11,10 @@ from
 			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
-			  gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n51
+			date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+			gp.REMOVED = 0 and 
+			(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
+			gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n51
 	inner join -- объединение детей от 5 до 18 лет с обучающимися детьми у которых есть подвоз до школы
 		(select 
 			distinct vt2.IIN as IIN
@@ -45,4 +47,4 @@ from
 		where (vt2.REG_DATE is not null) and (toDate(vt2.OUT_DATE) >= today() or vt2.OUT_DATE is null)) as n52_53
 	on n51.IIN = n52_53.IIN) as p11
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p11.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

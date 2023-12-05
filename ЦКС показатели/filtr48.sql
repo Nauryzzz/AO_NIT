@@ -11,8 +11,10 @@ from
 			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 0 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
-			  gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n43
+			date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+			gp.REMOVED = 0 and 
+			(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
+			gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n43
 	inner join -- объединение детей до 18 лет с детьми с диагнозами...
 		(select -- список детей с диагнозами...
 			distinct vt.IIN as IIN 
@@ -39,4 +41,4 @@ from
 		) as n44_45
 	on n43.IIN = n44_45.IIN) as p8
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p8.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

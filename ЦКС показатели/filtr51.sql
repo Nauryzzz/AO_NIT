@@ -13,4 +13,4 @@ from
 		asp.counter = (select max(counter) from SK_FAMILY.MTZSN_FAMILTY_ASP) -- выбор последнего квартала
 	) as p30
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p30.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);
