@@ -14,7 +14,10 @@ from
 			date_diff(month, toDateTime64(BIRTH_DATE, 0), today()) as age_month,
 			SEX_ID
 		from MU_FL.GBL_PERSON
-		where PERSON_STATUS_ID <> 3) as gp
+		where
+			REMOVED = 0 and 
+			(EXCLUDE_REASON_ID is null or EXCLUDE_REASON_ID = 1) and
+			PERSON_STATUS_ID <> 3) as gp
 	where
 		case 
 			when gp.SEX_ID = 1 then if(gp.age_year = 63 - 2, 1, 0)
@@ -51,10 +54,11 @@ from
 		from MTSZN_SOLIDARY.C_SDU_PNPD_DOCUMENT as doc
 			inner join MTSZN_SOLIDARY.SR_SOURCE as sr on sr.CODE = doc.RFPM_ID
 		where
-			toYear(toDateTimeOrNull(doc.PNCP_DATE)) = 2023 and 
+			toYear(toDateTimeOrNull(doc.PNCP_DATE)) = toYear(now()) and 
+			toMonth(toDateTimeOrNull(doc.PNCP_DATE)) between (toMonth(now() - interval 3 month)) and (toMonth(now() - interval 1 month)) and 
 			sr.CODE in ('08',       /* Базовая пенсионная выплата */
 						'0800',     /* Базовая пенсионная выплата */
 						'08000001', /* Базовая пенсия */)) as doc
 	on pers.SICID = doc.SICID) as p41	
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p41.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

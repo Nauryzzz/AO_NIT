@@ -11,8 +11,10 @@ from
 			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 5 and 
-			  date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
-			  gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n54  
+			date_diff(year, toDate(gp.BIRTH_DATE), today()) <= 18 and
+			gp.REMOVED = 0 and 
+			(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
+			 gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n54  
 	inner join -- объединение детей от 5 до 18 лет с обучающимися детьми
 		(select 
 			distinct vt2.IIN as IIN
@@ -40,13 +42,14 @@ from
 	inner join -- объединение обучающихся детей от 5 до 18 лет с детьми имеющими инвалидность
 		(select -- дети имеющие инвалидность
 			distinct pi.RN as IIN
-		from MTSZN_CBDIAPP.PATIENT_INFO as pi
-		where pi.INV_GROUP in (4,  /* Ребенок- инвалид */
-								9, /* Ребенок- инвалид */
-								6, /* Ребенок- инвалид 1 группа */
-								7, /* Ребенок- инвалид 2 группа */
-								8  /* Ребенок- инвалид 3 группа */) and 
-			toDate(pi.INV_ENDDATE) >= today()) as n56
+		from MTSZN_CBDIAPP.PATIENT_INFO_ACTUAL as pi
+		where pi.RN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and
+			pi.INV_GROUP in (4, /* Ребенок- инвалид */
+							 9, /* Ребенок- инвалид */
+							 6, /* Ребенок- инвалид 1 группа */
+							 7, /* Ребенок- инвалид 2 группа */
+							 8  /* Ребенок- инвалид 3 группа */) and 
+			(toDate(pi.INV_ENDDATE) >= today() or pi.INV_ENDDATE = '0000-00-00')) as n56
 	on n54.IIN = n56.IIN) as p12
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p12.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

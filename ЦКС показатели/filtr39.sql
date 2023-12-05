@@ -14,7 +14,9 @@ from
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where 
-				date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+				date_diff(year, toDateTime64(gp.BIRTH_DATE, 0), today()) > 18 and
+				gp.REMOVED = 0 and 
+				(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
 				gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n109 
 		inner join -- объединение людей от 18 лет с людьми с прикреплением к поликлинике
 			(select -- прикрепленные к поликлинике
@@ -36,9 +38,10 @@ from
 		select -- беременные женщины
 			distinct h.IIN as IIN
 		from MZ_REGISTERS_BASE.HUMAN as h 
-			inner join MZ_REGISTERS_BASE.BER_KARTA bk on bk.HUMAN_UID = h.UID 
+			inner join MZ_REGISTERS_BASE.BER_KARTA as bk on bk.HUMAN_UID = h.UID 
 		where h.IIN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and 
-			h.IIN is not null) as vt1
+			h.IIN is not null and 
+			(bk.DT_SNAT is null or toDate(bk.DT_SNAT) >= today())) as vt1
 	inner join -- объденинение с людьми направленными на принудительное лечение
 		(select -- люди направленные на принудительное лечение по решению суда
 			distinct cc.defendant as IIN
@@ -48,8 +51,9 @@ from
 	except -- исключение людей с инвалидностью
 		select -- люди с инвалидностью (1-2 группа)
 			distinct pi.RN as IIN
-		from MTSZN_CBDIAPP.PATIENT_INFO as pi
-		where pi.INV_GROUP in (1, 2) and 
-			toDate(pi.INV_ENDDATE) >= today()) as p23
+		from MTSZN_CBDIAPP.PATIENT_INFO_ACTUAL as pi
+		where pi.RN <> '4EE9CB68BAD1069BBE54103C9FBD957807CDE54A8B4BAC570A9326425D45E7B8' and
+			pi.INV_GROUP in (1, 2) and 
+			(toDate(pi.INV_ENDDATE) >= today() or pi.INV_ENDDATE = '0000-00-00')) as p23
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p23.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);

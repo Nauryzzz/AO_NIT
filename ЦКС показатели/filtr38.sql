@@ -14,7 +14,9 @@ from
 				distinct gp.IIN as IIN
 			from MU_FL.GBL_PERSON as gp
 			where 
-				date_diff(year, toDate(gp.BIRTH_DATE), today()) > 18 and
+				date_diff(year, toDateTime64(gp.BIRTH_DATE, 0), today()) > 18 and
+				gp.REMOVED = 0 and 
+				(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
 				gp.PERSON_STATUS_ID <> 3 /* признак: не мертв */) as n105
 		inner join -- объединение людей от 18 лет с людьми с зависимостью от ПАВ
 			(select -- люди с зависимостью от ПАВ
@@ -30,4 +32,4 @@ from
 		where cat = 2 and category = '142080004600000000') as vt 
 	) as p22
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p22.IIN -- определение ID семьи для ИИН
-group by toString(fm.SK_FAMILY_ID)
+group by toString(fm.SK_FAMILY_ID);
