@@ -9,7 +9,8 @@ gbl_pers as
 		gp.REMOVED = 0 and 
 		gp.PERSON_STATUS_ID in (1, 2) and 
 		(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
-		gp.CITIZENSHIP_ID  = 105),
+		gp.CITIZENSHIP_ID  = 105 or 
+		(gp.CAPABLE_STATUS_ID is null or gp.CAPABLE_STATUS_ID = 1)),
 		  
 trud_dogovor as 
 	(select distinct 
