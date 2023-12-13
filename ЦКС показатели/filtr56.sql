@@ -1,15 +1,15 @@
 /* 35. Информация по выпускникам послевузовского образования */
 select
-	toString(fm.SK_FAMILY_ID) as SK_FAMILY_ID,
-	'filtr56' as filtr, -- информация по выпускникам послевузовского образования
-	if(count(p35.IIN) > 0, 1, 0) as filtr_value
+	toString(fm.SK_FAMILY_ID) as SK_FAMILY_ID, -- ID семьи
+	'filtr56' as filtr, -- необходимо для определения значений текущего показателя при UNION ALL
+	if(count(p35.IIN) > 0, 1, 0) as filtr_value -- если в семье есть хоть один подходящий ИИН, то признак будет 1 иначе 0
 from
 	(select distinct
 		n_148.IIN,
 		n_149.value
 	from
-		(select distinct
-			gp.IIN as IIN
+		(select -- люди от 16 до 29
+			distinct gp.IIN as IIN
 		from MU_FL.GBL_PERSON as gp
 		where date_diff(year, toDate(gp.BIRTH_DATE), today()) >= 16 and 
 			date_diff(year, toDate(gp.BIRTH_DATE), today()) < 29 and
@@ -17,11 +17,11 @@ from
 			(gp.EXCLUDE_REASON_ID is null or gp.EXCLUDE_REASON_ID = 1) and
 			gp.PERSON_STATUS_ID <> 3) as n_148
 			  
-		inner join
+		inner join -- объединение людей от 16 до 29 лет с людьми с послевузовским образованием
 		
-		(select distinct
+		(select distinct -- люди с послевузовским образованием
 			vt2.IIN as IIN,
-			if(date_diff(year, toDate(vt2.OUT_DATE), today()) <= 3, 1, 0) as value
+			if(date_diff(year, toDate(vt2.OUT_DATE), today()) <= 3, 1, 0) as value -- если обучение завершено менее 3 лех назад, то принзак будет 1 иначе 0
 		from
 			(select 
 				vt1.IIN, 
@@ -52,8 +52,8 @@ from
 											16  /* Магистратура (Свидетельство к диплому магистра) */)
 					
 					) as vt1
-				where vt1.num = 1) as vt2
+				where vt1.num = 1 /* последняя запись по REG_DATE */) as vt2
 			where vt2.REG_DATE is not null and vt2.OUT_DATE is not null) as n_149
 		on n_148.IIN = n_149.IIN) as p35
-	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p35.IIN
+	inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p35.IIN -- определение ID семьи для ИИН
 group by toString(fm.SK_FAMILY_ID);
