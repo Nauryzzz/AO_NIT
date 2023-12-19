@@ -7,6 +7,6 @@ from
 	(select -- владельцы земельных участков
 		distinct ekgn.IIN as IIN
 	from DM_ZEROS.DM_MU_RN_PROPERTY_IIN_RNN as ekgn
-	where TYPE_OF_PROPERTY = 14175897 /* Земельный участок */) as p1
+	where ekgn.TYPE_OF_PROPERTY = 14175897 /* Земельный участок */) as p1
 inner join SK_FAMILY.SK_FAMILY_MEMBER as fm on fm.IIN = p1.IIN -- определение ID семьи для ИИН
 group by toString(fm.SK_FAMILY_ID);
