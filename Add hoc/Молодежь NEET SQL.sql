@@ -107,14 +107,14 @@ select
   	HAS_MASTER_DEGREE_OBR,
   	HAS_UNFINISH_MASTER_DEGREE_OBR,
 	
-	if(k.KATO_2 = '' or k.KATO_2 is null, '(без прописки)', k.KATO_2) as KATO_2, 
-	if(k.KATO_2_NAME = '' or k.KATO_2_NAME is null, '(без прописки)', k.KATO_2_NAME) as KATO_2_NAME,
+	k.KATO_2  as KATO_2, 
+	k.KATO_2_NAME as KATO_2_NAME,
 
-	if(k.KATO_4 = '' or k.KATO_4 is null, '(без прописки)', k.KATO_4) as KATO_4, 
-	if(k.KATO_4_NAME = '' or k.KATO_4_NAME is null, '(без прописки)', k.KATO_4_NAME) as KATO_4_NAME,
+	k.KATO_4 as KATO_4, 
+	k.KATO_4_NAME as KATO_4_NAME,
 
-	if(k.KATO_6 = '' or k.KATO_6 is null, '(без прописки)', k.KATO_6) as KATO_6, 
-	if(k.KATO_6_NAME = '' or k.KATO_6_NAME is null, '(без прописки)', k.KATO_6_NAME) as KATO_6_NAME,
+	k.KATO_6 as KATO_6, 
+	k.KATO_6_NAME as KATO_6_NAME,
 	KATO,
 	
 	case 
@@ -153,7 +153,10 @@ from
 		(select 
 			IIN, 
 			KATO_2, KATO_2_NAME,
-			KATO_4, KATO_4_NAME,
+			
+			if(KATO_2_NAME in ('г. Астана', 'г.Алматы', 'г.Шымкент'), null, KATO_4) as KATO_4, 
+			if(KATO_2_NAME in ('г. Астана', 'г.Алматы', 'г.Шымкент'), null, KATO_4_NAME) as KATO_4_NAME,
+			
 			KATO_6, FULL_KATO_NAME as KATO_6_NAME
 		from SOC_KARTA.KATO_FOR_FAMILY
 		where KATO_2 <> '' and KATO_2_NAME <> '') as k on k.IIN = neet.IIN
