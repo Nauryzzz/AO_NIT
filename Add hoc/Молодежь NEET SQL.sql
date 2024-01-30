@@ -119,7 +119,6 @@ select
 	
 	case 
 		when 
-			neet.IS_YOUNG_STUDENT = 1 and 
 			neet.IS_UCHRED = 'Не является учредителем ЮЛ' and 
 			neet.IS_IP = 'Отсутствует ИП' and 
 			neet.IS_GRST = 'Отсутсвует КХ/ФХ' and 
@@ -134,16 +133,23 @@ select
 	case
 		when 
 			IS_NEET = 1 and
+			neet.IS_YOUNG_STUDENT = 1 and 
 			neet.HAS_STUDY_DOC = 'Зарегистрирован диплом/аттестат об образовании' and 
 			neet.HAS_SOC_OTCHISL = 'Никогда не отчисляли социальных отчислений и платежей'
 		then 'Молодой выпускник'
+		
+		when 
+			IS_NEET = 1 and 
+			IS_OLD_STUDENT = 1
+		then 'Не работающий'
+		
 		when 
 			IS_NEET = 1 and
 			neet.HAS_CHILD_POSOB = 'Не получает пособия по уходу за ребенком' and 
 			neet.HAS_CHILD = 'Наличие ребенка (детей не более 3-х)'
 		then 'Молодой родитель'
-		else 
-			if(IS_NEET = 1, 'Не работающий', '(нет данных)')
+		
+		else '(нет данных)'
 	end as NEET_CATEGORY,
 	
 	today() as SDU_LOAD_IN_DT
@@ -182,4 +188,3 @@ select
 	COUNT(yn.IIN) as YOUTH_CNT,
 	MAX(SDU_LOAD_IN_DT) as SDU_LOAD_IN_DT
 from DM_ANALYTICS.YOUTH_NEET as yn
-
