@@ -28,6 +28,10 @@ CREATE TABLE DM_ANALYTICS.YOUTH_NEET
     HAS_UNFINISH_VYSWEE_OBR String,
     HAS_MASTER_DEGREE_OBR String,
     HAS_UNFINISH_MASTER_DEGREE_OBR String,
+	
+    IS_DISABLED Nullable(Int32),
+    IS_IMPRISONED Nullable(Int32),
+    IS_STUDENT Nullable(Int32),
     
     KATO_2 Nullable(String),
     KATO_2_NAME Nullable(String),
@@ -72,6 +76,9 @@ insert into DM_ANALYTICS.YOUTH_NEET
 	HAS_UNFINISH_VYSWEE_OBR,
 	HAS_MASTER_DEGREE_OBR,
 	HAS_UNFINISH_MASTER_DEGREE_OBR,
+  	IS_DISABLED,
+  	IS_IMPRISONED,
+  	IS_STUDENT,
 	KATO_2, KATO_2_NAME,
 	KATO_4, KATO_4_NAME,
 	KATO_6, KATO_6_NAME,
@@ -107,6 +114,10 @@ select
   	HAS_MASTER_DEGREE_OBR,
   	HAS_UNFINISH_MASTER_DEGREE_OBR,
 	
+  	IS_DISABLED,
+  	IS_IMPRISONED,
+  	IS_STUDENT,
+	
 	k.KATO_2  as KATO_2, 
 	k.KATO_2_NAME as KATO_2_NAME,
 
@@ -125,7 +136,10 @@ select
 			neet.IS_OSMS = 'Отсутствует в списке плательщиков ОСМС' and 
 			neet.IS_ESP = 'Не является плательщиком ЕСП' and 
 			neet.IS_OPV_2MONTH = 'Отсутствуют налоговые отчисления ОПВ последние 2 месяца подряд' and 
-			neet.IS_BEZRAB = 'Отсутствует в базе данных официальных безработных'
+			neet.IS_BEZRAB = 'Отсутствует в базе данных официальных безработных' and 
+			neet.IS_STUDENT = 0 and 
+			neet.IS_IMPRISONED = 0 and 
+			neet.IS_DISABLED = 0
 		then 1 
 		else 0
 	end as IS_NEET,
@@ -173,6 +187,9 @@ where
 CREATE TABLE DM_ANALYTICS.YOUTH_NEET_HIST
 (
 	NEET_CNT Nullable(Int64),
+	YOUNG_GRADUATE Nullable(Int64),
+	NERAB Nullable(Int64),
+	YOUNG_PARENT Nullable(Int64),
 	YOUTH_CNT Nullable(Int64),
     SDU_LOAD_IN_DT DateTime
 )
@@ -181,10 +198,34 @@ order by SDU_LOAD_IN_DT
 SETTINGS index_granularity = 8192;
 */
 
-insert into 
-	DM_ANALYTICS.YOUTH_NEET_HIST (NEET_CNT, YOUTH_CNT, SDU_LOAD_IN_DT)
+insert into DM_ANALYTICS.YOUTH_NEET_HIST 
+	(NEET_CNT, 
+	YOUNG_GRADUATE,
+	NERAB,
+	YOUNG_PARENT,
+	YOUTH_CNT, 
+	SDU_LOAD_IN_DT)
 select 
 	sumIf(yn.IS_NEET = 1, 1) as NEET_CNT,
+	sumIf(yn.NEET_CATEGORY = 'Молодой выпускник', 1) as YOUNG_GRADUATE,
+	sumIf(yn.NEET_CATEGORY = 'Не работающий', 1) as NERAB,
+	sumIf(yn.NEET_CATEGORY = 'Молодой родитель', 1) as YOUNG_PARENT,
 	COUNT(yn.IIN) as YOUTH_CNT,
 	MAX(SDU_LOAD_IN_DT) as SDU_LOAD_IN_DT
 from DM_ANALYTICS.YOUTH_NEET as yn
+
+/*
+NEET_CNT	YOUTH_CNT	SDU_LOAD_IN_DT
+346968	5853905	2023-11-14 00:00:00
+346968	5853905	2023-11-14 00:00:00
+346968	5853905	2023-11-15 00:00:00
+175003	5910066	2024-01-04 00:00:00
+3605497	5907205	2024-01-30 00:00:00
+3603359	5913692	2024-02-01 07:26:20
+3604788	5915312	2024-02-02 07:24:32
+3604786	5915312	2024-02-03 07:28:03
+3607446	5918060	2024-02-04 07:24:40
+3608354	5918683	2024-02-05 07:22:09
+3610074	5920937	2024-02-06 07:34:21
+3632463	5922992	2024-02-07 07:28:55
+*/
