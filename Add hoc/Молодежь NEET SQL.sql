@@ -32,6 +32,11 @@ CREATE TABLE DM_ANALYTICS.YOUTH_NEET
     IS_DISABLED Nullable(Int32),
     IS_IMPRISONED Nullable(Int32),
     IS_STUDENT Nullable(Int32),
+    IS_PAV Nullable(Int32),
+    IS_PREGNANT Nullable(Int32),
+    IS_IN_DEBT Nullable(Int32),
+    HAS_TRANSPORT Nullable(Int32),
+    HAS_ALIMONY_DEBT Nullable(Int32),
     
     KATO_2 Nullable(String),
     KATO_2_NAME Nullable(String),
@@ -79,6 +84,11 @@ insert into DM_ANALYTICS.YOUTH_NEET
   	IS_DISABLED,
   	IS_IMPRISONED,
   	IS_STUDENT,
+    IS_PAV,
+    IS_PREGNANT,
+    IS_IN_DEBT,
+    HAS_TRANSPORT,
+    HAS_ALIMONY_DEBT,
 	KATO_2, KATO_2_NAME,
 	KATO_4, KATO_4_NAME,
 	KATO_6, KATO_6_NAME,
@@ -117,6 +127,11 @@ select
   	IS_DISABLED,
   	IS_IMPRISONED,
   	IS_STUDENT,
+    IS_PAV,
+    IS_PREGNANT,
+    IS_IN_DEBT,
+    HAS_TRANSPORT,
+    HAS_ALIMONY_DEBT,
 	
 	k.KATO_2  as KATO_2, 
 	k.KATO_2_NAME as KATO_2_NAME,
@@ -187,7 +202,7 @@ where
 CREATE TABLE DM_ANALYTICS.YOUTH_NEET_HIST
 (
 	NEET_CNT Nullable(Int64),
-	YOUNG_GRADUATE Nullable(Int64),
+	YOUNG_GRDAUATED Nullable(Int64),
 	NERAB Nullable(Int64),
 	YOUNG_PARENT Nullable(Int64),
 	YOUTH_CNT Nullable(Int64),
@@ -200,14 +215,14 @@ SETTINGS index_granularity = 8192;
 
 insert into DM_ANALYTICS.YOUTH_NEET_HIST 
 	(NEET_CNT, 
-	YOUNG_GRADUATE,
+	YOUNG_GRDAUATED,
 	NERAB,
 	YOUNG_PARENT,
 	YOUTH_CNT, 
 	SDU_LOAD_IN_DT)
 select 
 	sumIf(yn.IS_NEET = 1, 1) as NEET_CNT,
-	sumIf(yn.NEET_CATEGORY = 'Молодой выпускник', 1) as YOUNG_GRADUATE,
+	sumIf(yn.NEET_CATEGORY = 'Молодой выпускник', 1) as YOUNG_GRDAUATED,
 	sumIf(yn.NEET_CATEGORY = 'Не работающий', 1) as NERAB,
 	sumIf(yn.NEET_CATEGORY = 'Молодой родитель', 1) as YOUNG_PARENT,
 	COUNT(yn.IIN) as YOUTH_CNT,
