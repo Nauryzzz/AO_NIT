@@ -382,7 +382,7 @@ SRS as
 	   (select IIN,
 			   STATUS_ID,
 			   CATEGORY_ID,
-			   ROW_NUMBER() OVER (PARTITION BY IIN
+			   ROW_NUMBER() OVER (PARTITION BY IIN, STATUS_ID, CATEGORY_ID
 								  ORDER BY ID DESC) as RN
 		from SK_FAMILY.SR_PERSON_SOURCE
 		where STATUS_ID in (16,
@@ -397,71 +397,90 @@ SRS as
 							12,
 							240,
 							15)
-		  and CATEGORY_ID in (99,
+		  OR CATEGORY_ID in (99,
 							  100,
 							  125,
 							  107))
-	 where RN = 1)
-SELECT DISTINCT 
-	i.IIN,
-	 case
-		 when STATUS_ID = 16 then 1
-		 else 0
-	 end AS beremennye,
-	 case
-		 when STATUS_ID = 238 then 1
-		 else 0
-	 end AS inostr_grajd,
-	 case
-		 when STATUS_ID = 32 then 1
-		 else 0
-	 end AS naem_rabotniki,
-	 case
-		 when STATUS_ID = 318 then 1
-		 else 0
-	 end AS bezhency,
-	 case
-		 when STATUS_ID = 315 then 1
-		 else 0
-	 end AS poluch_posobii,
-	 case
-		 when STATUS_ID = 1 then 1
-		 else 0
-	 end AS pernsioner,
-	 case
-		 when STATUS_ID = 2 then 1
-		 else 0
-	 end AS veteran_vov,
-	 case
-		 when STATUS_ID = 314 then 1
-		 else 0
-	 end AS umer_ispolnenii,
-	 case
-		 when STATUS_ID = 11 then 1
-		 else 0
-	 end AS invalidnost,
-	 case
-		 when STATUS_ID = 12 then 1
-		 else 0
-	 end AS uhod_inv,
-	 case
-		 when CATEGORY_ID in (125, 107) then 1
-		 else 0
-	 end AS det_bez_popech,
-	 case
-		 when STATUS_ID = 240 then 1
-		 else 0
-	 end AS mnogodet,
-	 case
-		 when CATEGORY_ID in (99, 100) then 1
-		 else 0
-	 end AS poluch_asp,
-	 case
-		 when STATUS_ID = 15 then 1
-		 else 0
-	 end AS kandas
-  FROM IIN_BIN as i 
-  left join SRS as s on s.IIN = i.IIN
+	 where RN = 1),
+SRS_R as 
+	(SELECT DISTINCT 
+		i.IIN,
+		 case
+			 when STATUS_ID = 16 then 1
+			 else 0
+		 end AS beremennye,
+		 case
+			 when STATUS_ID = 238 then 1
+			 else 0
+		 end AS inostr_grajd,
+		 case
+			 when STATUS_ID = 32 then 1
+			 else 0
+		 end AS naem_rabotniki,
+		 case
+			 when STATUS_ID = 318 then 1
+			 else 0
+		 end AS bezhency,
+		 case
+			 when STATUS_ID = 315 then 1
+			 else 0
+		 end AS poluch_posobii,
+		 case
+			 when STATUS_ID = 1 then 1
+			 else 0
+		 end AS pernsioner,
+		 case
+			 when STATUS_ID = 2 then 1
+			 else 0
+		 end AS veteran_vov,
+		 case
+			 when STATUS_ID = 314 then 1
+			 else 0
+		 end AS umer_ispolnenii,
+		 case
+			 when STATUS_ID = 11 then 1
+			 else 0
+		 end AS invalidnost,
+		 case
+			 when STATUS_ID = 12 then 1
+			 else 0
+		 end AS uhod_inv,
+		 case
+			 when CATEGORY_ID in (125, 107) then 1
+			 else 0
+		 end AS det_bez_popech,
+		 case
+			 when STATUS_ID = 240 then 1
+			 else 0
+		 end AS mnogodet,
+		 case
+			 when CATEGORY_ID in (99, 100) then 1
+			 else 0
+		 end AS poluch_asp,
+		 case
+			 when STATUS_ID = 15 then 1
+			 else 0
+		 end AS kandas
+	  FROM IIN_BIN as i 
+	  left join SRS as s on s.IIN = i.IIN)
+select 
+	IIN,
+	sum(beremennye) as beremennye,
+	sum(inostr_grajd) as inostr_grajd,
+	sum(naem_rabotniki) as naem_rabotniki,
+	sum(bezhency) as bezhency,
+	sum(poluch_posobii) as poluch_posobii,
+	sum(pernsioner) as pernsioner,
+	sum(veteran_vov) as veteran_vov,
+	--sum(umer_ispolnenii) as umer_ispolnenii,
+	sum(invalidnost) as invalidnost,
+	sum(uhod_inv) as uhod_inv,
+	--sum(det_bez_popech) as det_bez_popech,
+	sum(mnogodet) as mnogodet,
+	sum(poluch_asp) as poluch_asp,
+	sum(kandas) as kandas
+from SRS_R as s 
+group by s.IIN
   
 -- динамика ЗП по месяцам
 with zp as
