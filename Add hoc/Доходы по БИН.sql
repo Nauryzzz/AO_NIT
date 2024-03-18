@@ -148,6 +148,35 @@ where l.RNN in (SELECT distinct ozp.IIN
 	 COALESCE(PERIOD, d.PERIOD) like '%2023') 
 GROUP BY RNN, PERIOD, AMOUNT, MH, BIN
 
+-- ИИНки с нашего БИН, которые получали доход с других БИН и с нашего БИН в один период
+DROP TABLE IF EXISTS TEST.OPV_IIN_NOT_BIN2;
+CREATE TABLE TEST.OPV_IIN_NOT_BIN2
+	(IIN String,
+	ZP Nullable(Float64),
+	BIN Nullable(String),
+	PERIOD Nullable(String),
+	RN Nullable(Int32))
+ENGINE = MergeTree
+ORDER BY IIN
+SETTINGS index_granularity = 8192
+AS
+with v1 as	
+	(select distinct
+		b1.IIN,
+		b1.ZP,
+		b1.BIN,
+		b1.PERIOD,
+		toDate(concat(substring(b1.PERIOD, 3, 4), '-', substring(b1.PERIOD, 1, 2), '-01')) as DTRN
+	from TEST.OPV_IIN_NOT_BIN as b1 
+	join TEST.OPV_IIN_BIN as b2 on b1.IIN = b2.IIN and b1.PERIOD = b2.PERIOD)
+select 
+	IIN,
+	ZP,
+	BIN,
+	PERIOD,
+	ROW_NUMBER() OVER (partition by IIN order by DTRN desc) as RN
+from v1
+
 -- 1 вкладка
 SELECT 
 	zp.IIN, 
@@ -254,7 +283,7 @@ OPV as
 		BIN,
 		PERIOD, 
 		RN
-	FROM TEST.OPV_IIN_NOT_BIN),
+	FROM TEST.OPV_IIN_NOT_BIN), -- OPV_IIN_NOT_BIN2 если нужна инфа только для тех кто получал доход с др БИНа и с нашего БИНа в один период
 BIN_R as 
 	(select 
 		IIN,
